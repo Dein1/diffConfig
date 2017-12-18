@@ -1,12 +1,21 @@
+import _ from 'lodash';
 import fs from 'fs';
 
-const file1 = JSON.parse(fs.readFileSync('./__tests__/__fixtures__/before.json'));
-const file2 = JSON.parse(fs.readFileSync('./__tests__/__fixtures__/after.json'));
-
-export default () => {
-  console.log('hello!');
-  console.log(file1);
-  console.log(file2);
-  console.log(file1.host);
-  return true;
+export default (file1, file2) => {
+  const parsedFile1 = JSON.parse(fs.readFileSync(file1));
+  const parsedFile2 = JSON.parse(fs.readFileSync(file2));
+  const un = _.union(_.keys(parsedFile1), _.keys(parsedFile2));
+  const reduced = un.reduce((acc, el) => {
+    if (parsedFile1[el] === parsedFile2[el]) {
+      return `${acc}    ${el}: ${parsedFile1[el]}\n`;
+    }
+    if (parsedFile1[el] !== parsedFile2[el] && parsedFile2[el] === undefined) {
+      return `${acc}  - ${el}: ${parsedFile1[el]}\n`;
+    }
+    if (parsedFile1[el] === undefined) {
+      return `${acc}  + ${el}: ${parsedFile2[el]}\n`;
+    }
+    return `${acc}  + ${el}: ${parsedFile2[el]}\n  - ${el}: ${parsedFile1[el]}\n`;
+  }, '{\n');
+  return `${reduced}}`;
 };
