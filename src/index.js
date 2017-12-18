@@ -4,8 +4,8 @@ import fs from 'fs';
 export default (file1, file2) => {
   const parsedFile1 = JSON.parse(fs.readFileSync(file1));
   const parsedFile2 = JSON.parse(fs.readFileSync(file2));
-  const un = _.union(_.keys(parsedFile1), _.keys(parsedFile2));
-  const reduced = un.reduce((acc, el) => {
+  const uniq = _.union(_.keys(parsedFile1), _.keys(parsedFile2));
+  const reduced = uniq.reduce((acc, el) => {
     if (parsedFile1[el] === parsedFile2[el]) {
       return `${acc}    ${el}: ${parsedFile1[el]}\n`;
     }
