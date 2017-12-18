@@ -8,4 +8,4 @@ publish:
 	npm publish
 
 start:
-	npm run babel-node -- src/bin/diff.js
+	npm run babel-node -- src/bin/gendiff.js
