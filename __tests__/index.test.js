@@ -24,3 +24,14 @@ test('flat yaml files', () => {
 }`);
 });
 
+test('flat ini files', () => {
+  const config1 = '__tests__/__fixtures__/before.ini';
+  const config2 = '__tests__/__fixtures__/after.ini';
+  expect(diff(config1, config2)).toMatch(`{
+    host: hexlet.io
+  + timeout: 20
+  - timeout: 50
+  - proxy: 123.234.53.22
+  + verbose: true
+}`);
+});

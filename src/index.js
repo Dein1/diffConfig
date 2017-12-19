@@ -2,15 +2,20 @@ import _ from 'lodash';
 import fs from 'fs';
 import path from 'path';
 import yaml from 'js-yaml';
+import ini from 'ini';
 
 const parseMethods = [
   {
     format: '.json',
-    parse: config => JSON.parse(fs.readFileSync(config)),
+    parse: config => JSON.parse(fs.readFileSync(config, 'utf8')),
   },
   {
     format: '.yml',
-    parse: config => yaml.safeLoad(fs.readFileSync(config)),
+    parse: config => yaml.safeLoad(fs.readFileSync(config, 'utf8')),
+  },
+  {
+    format: '.ini',
+    parse: config => ini.parse(fs.readFileSync(config, 'utf8')),
   },
 ];
 
