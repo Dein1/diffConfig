@@ -1,6 +1,6 @@
 {
   "name": "gendiff-dm-abramov",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Hexlet.io project #2",
   "main": "dist/index.js",
   "bin": {
@@ -21,7 +21,8 @@
   "license": "ISC",
   "dependencies": {
     "commander": "^2.12.2",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "js-yaml": "*"
   },
   "devDependencies": {
     "babel-cli": "*",
