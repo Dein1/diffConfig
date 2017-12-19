@@ -7,39 +7,44 @@ import ini from 'ini';
 const parseMethods = [
   {
     format: '.json',
-    parse: config => JSON.parse(fs.readFileSync(config, 'utf8')),
+    parse: config => JSON.parse(config),
   },
   {
     format: '.yml',
-    parse: config => yaml.safeLoad(fs.readFileSync(config, 'utf8')),
+    parse: config => yaml.safeLoad(config),
   },
   {
     format: '.ini',
-    parse: config => ini.parse(fs.readFileSync(config, 'utf8')),
+    parse: config => ini.parse(config),
   },
 ];
 
-const getParseMethod = (filepath) => {
-  const extension = path.extname(filepath);
+const parse = (file, extension) => {
   const method = _.find(parseMethods, ['format', extension]);
-  return method.parse(filepath);
+  return method.parse(file);
 };
 
-export default (file1, file2) => {
-  const parsedFile1 = getParseMethod(file1);
-  const parsedFile2 = getParseMethod(file2);
-  const uniq = _.union(_.keys(parsedFile1), _.keys(parsedFile2));
-  const reduced = uniq.reduce((acc, el) => {
-    if (parsedFile1[el] === parsedFile2[el]) {
-      return `${acc}    ${el}: ${parsedFile1[el]}\n`;
+const render = (parsedData1, parsedData2) => {
+  const allKeys = _.union(_.keys(parsedData1), _.keys(parsedData2));
+  const rendered = allKeys.reduce((acc, el) => {
+    if (parsedData1[el] === parsedData2[el]) {
+      return `${acc}    ${el}: ${parsedData2[el]}\n`;
     }
-    if (parsedFile1[el] !== parsedFile2[el] && parsedFile2[el] === undefined) {
-      return `${acc}  - ${el}: ${parsedFile1[el]}\n`;
+    if (parsedData1[el] && parsedData2[el] === undefined) {
+      return `${acc}  - ${el}: ${parsedData1[el]}\n`;
     }
-    if (parsedFile1[el] === undefined) {
-      return `${acc}  + ${el}: ${parsedFile2[el]}\n`;
+    if (parsedData1[el] === undefined) {
+      return `${acc}  + ${el}: ${parsedData2[el]}\n`;
     }
-    return `${acc}  + ${el}: ${parsedFile2[el]}\n  - ${el}: ${parsedFile1[el]}\n`;
+    return `${acc}  + ${el}: ${parsedData2[el]}\n  - ${el}: ${parsedData1[el]}\n`;
   }, '{\n');
-  return `${reduced}}`;
+  return `${rendered}}`;
+};
+
+export default (filePath1, filePath2) => {
+  const file1 = fs.readFileSync(filePath1, 'utf8');
+  const file2 = fs.readFileSync(filePath2, 'utf8');
+  const parsedData1 = parse(file1, path.extname(filePath1));
+  const parsedData2 = parse(file2, path.extname(filePath2));
+  return render(parsedData1, parsedData2);
 };

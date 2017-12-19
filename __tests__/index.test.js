@@ -35,3 +35,4 @@ test('flat ini files', () => {
   + verbose: true
 }`);
 });
+
