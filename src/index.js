@@ -49,18 +49,18 @@ const objectToString = (object, level) => {
 };
 
 const renderToString = (ast, level = 0) => {
+  const prefixMap = {
+    recursive: '    ',
+    unchanged: '    ',
+    added: '  + ',
+    removed: '  - ',
+  };
   const reduced = ast.reduce((acc, el) => {
     if (el.type === 'recursive') {
-      return `${acc}${addPadding(level)}    ${el.name}: ${renderToString(el.value, level + 1)}\n`;
+      return `${acc}${addPadding(level)}${prefixMap[el.type]}${el.name}: ${renderToString(el.value, level + 1)}\n`;
     }
     const newValue = _.isObject(el.value) ? objectToString(el.value, level + 1) : el.value;
-    if (el.type === 'unchanged') {
-      return `${acc}${addPadding(level)}    ${el.name}: ${newValue}\n`;
-    }
-    if (el.type === 'removed') {
-      return `${acc}${addPadding(level)}  - ${el.name}: ${newValue}\n`;
-    }
-    return `${acc}${addPadding(level)}  + ${el.name}: ${newValue}\n`;
+    return `${acc}${addPadding(level)}${prefixMap[el.type]}${el.name}: ${newValue}\n`;
   }, '{\n');
   return `${reduced}${addPadding(level)}}`;
 };
