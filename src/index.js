@@ -19,7 +19,7 @@ export const compare = (parsedData1, parsedData2) => {
   const allKeys = _.union(_.keys(parsedData1), _.keys(parsedData2));
   const compared = allKeys.reduce((acc, el) => {
     if (_.isObject(parsedData1[el]) && _.isObject(parsedData2[el])) {
-      return [...acc, { name: el, value: compare(parsedData1[el], parsedData2[el]), type: 'recursive' }];
+      return [...acc, { name: el, value: compare(parsedData1[el], parsedData2[el]), type: 'nested' }];
     }
     if (parsedData1[el] === parsedData2[el]) {
       return [...acc, { name: el, value: parsedData2[el], type: 'unchanged' }];
@@ -30,38 +30,41 @@ export const compare = (parsedData1, parsedData2) => {
     if (!parsedData1[el]) {
       return [...acc, { name: el, value: parsedData2[el], type: 'added' }];
     }
-    return [...acc, { name: el, value: parsedData2[el], type: 'added' }, { name: el, value: parsedData1[el], type: 'removed' }];
+    return [...acc, {
+      name: el, oldValue: parsedData1[el], newValue: parsedData2[el], type: 'changed',
+    }];
   }, []);
   return compared;
 };
 
-const addPadding = level => '    '.repeat(level);
+const addPadding = level => ' '.repeat(level * 4);
 
 const objectToString = (object, level) => {
   const allKeys = Object.keys(object);
   const reduced = allKeys.reduce((acc, el) => {
     if (_.isObject(object[el])) {
-      return `${acc}${addPadding(level)}    ${el}: ${objectToString(object[el], level + 1)}\n`;
+      return `${acc}${addPadding(level + 1)}${el}: ${objectToString(object[el], level + 1)}\n`;
     }
-    return `${acc}${addPadding(level)}    ${el}: ${object[el]}\n`;
+    return `${acc}${addPadding(level + 1)}${el}: ${object[el]}\n`;
   }, '{\n');
   return `${reduced}${addPadding(level)}}`;
 };
 
 const renderToString = (ast, level = 0) => {
-  const prefixMap = {
-    recursive: '    ',
-    unchanged: '    ',
-    added: '  + ',
-    removed: '  - ',
+  const nodeToString = (name, value, prefix) => {
+    const renderedValue = _.isObject(value) ? objectToString(value, level + 1) : value;
+    return `${addPadding(level)}${prefix}${name}: ${renderedValue}\n`;
   };
-  const reduced = ast.reduce((acc, el) => {
-    if (el.type === 'recursive') {
-      return `${acc}${addPadding(level)}${prefixMap[el.type]}${el.name}: ${renderToString(el.value, level + 1)}\n`;
-    }
-    const newValue = _.isObject(el.value) ? objectToString(el.value, level + 1) : el.value;
-    return `${acc}${addPadding(level)}${prefixMap[el.type]}${el.name}: ${newValue}\n`;
-  }, '{\n');
+
+  const nodeActionMap = {
+    nested: el => nodeToString(el.name, renderToString(el.value, level + 1), '    '),
+    changed: el => `${nodeToString(el.name, el.newValue, '  + ')}${nodeToString(el.name, el.oldValue, '  - ')}`,
+    unchanged: el => nodeToString(el.name, el.value, '    '),
+    added: el => nodeToString(el.name, el.value, '  + '),
+    removed: el => nodeToString(el.name, el.value, '  - '),
+  };
+
+  const reduced = ast.reduce((acc, el) => `${acc}${nodeActionMap[el.type](el)}`, '{\n');
   return `${reduced}${addPadding(level)}}`;
 };
 
