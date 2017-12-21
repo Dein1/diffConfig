@@ -19,7 +19,9 @@ export const compare = (parsedData1, parsedData2) => {
   const allKeys = _.union(_.keys(parsedData1), _.keys(parsedData2));
   const compared = allKeys.reduce((acc, el) => {
     if (_.isObject(parsedData1[el]) && _.isObject(parsedData2[el])) {
-      return [...acc, { name: el, value: compare(parsedData1[el], parsedData2[el]), type: 'recursive' }];
+      return [...acc, {
+        name: el, value: compare(parsedData1[el], parsedData2[el]), type: 'unchanged', recursive: true,
+      }];
     }
     if (parsedData1[el] === parsedData2[el]) {
       return [...acc, { name: el, value: parsedData2[el], type: 'unchanged' }];
@@ -30,7 +32,7 @@ export const compare = (parsedData1, parsedData2) => {
     if (!parsedData1[el]) {
       return [...acc, { name: el, value: parsedData2[el], type: 'added' }];
     }
-    return [...acc, { name: el, value: parsedData2[el], type: 'added' }, { name: el, value: parsedData1[el], type: 'removed' }];
+    return [...acc, { name: el, value: parsedData2[el], type: 'changedTo' }, { name: el, value: parsedData1[el], type: 'changedFrom' }];
   }, []);
   return compared;
 };
@@ -50,13 +52,14 @@ const objectToString = (object, level) => {
 
 const renderToString = (ast, level = 0) => {
   const prefixMap = {
-    recursive: '    ',
     unchanged: '    ',
     added: '  + ',
     removed: '  - ',
+    changedTo: '  + ',
+    changedFrom: '  - ',
   };
   const reduced = ast.reduce((acc, el) => {
-    if (el.type === 'recursive') {
+    if (el.recursive) {
       return `${acc}${addPadding(level)}${prefixMap[el.type]}${el.name}: ${renderToString(el.value, level + 1)}\n`;
     }
     const newValue = _.isObject(el.value) ? objectToString(el.value, level + 1) : el.value;

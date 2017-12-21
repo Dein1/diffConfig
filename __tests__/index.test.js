@@ -69,3 +69,17 @@ test('recursive ini files', () => {
   const config2 = '__tests__/__fixtures__/after-recursive.ini';
   expect(diff(config1, config2)).toMatch(recursiveResult);
 });
+
+/* const plainResult = `Property 'common.setting2' was removed
+Property 'common.setting6' was removed with complex value
+Property 'common.setting4' was added with value: blah blah
+Property 'common.setting5' was added with complex value
+Property 'group1.baz' was updated. From 'bas' to 'barz'
+Property 'group2' was removed with complex value
+Property 'group3' was added with complex value`;
+
+test('recursive json files - plain', () => {
+  const config1 = '__tests__/__fixtures__/before-recursive.json';
+  const config2 = '__tests__/__fixtures__/after-recursive.json';
+  expect(diff(config1, config2, 'plain')).toMatch(plainResult);
+}); */
