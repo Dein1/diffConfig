@@ -57,11 +57,11 @@ const renderToString = (ast, level = 0) => {
   };
 
   const nodeActionMap = {
-    nested: el => nodeToString(el.name, renderToString(el.value, level + 1), '    '),
-    changed: el => `${nodeToString(el.name, el.newValue, '  + ')}${nodeToString(el.name, el.oldValue, '  - ')}`,
-    unchanged: el => nodeToString(el.name, el.value, '    '),
-    added: el => nodeToString(el.name, el.value, '  + '),
-    removed: el => nodeToString(el.name, el.value, '  - '),
+    nested: node => nodeToString(node.name, renderToString(node.value, level + 1), '    '),
+    changed: node => `${nodeToString(node.name, node.newValue, '  + ')}${nodeToString(node.name, node.oldValue, '  - ')}`,
+    unchanged: node => nodeToString(node.name, node.value, '    '),
+    added: node => nodeToString(node.name, node.value, '  + '),
+    removed: node => nodeToString(node.name, node.value, '  - '),
   };
 
   const reduced = ast.reduce((acc, el) => `${acc}${nodeActionMap[el.type](el)}`, '{\n');
