@@ -19,7 +19,7 @@ export const compare = (parsedData1, parsedData2) => {
   const allKeys = _.union(_.keys(parsedData1), _.keys(parsedData2));
   const compared = allKeys.reduce((acc, el) => {
     if (_.isObject(parsedData1[el]) && _.isObject(parsedData2[el])) {
-      return [...acc, { name: el, value: compare(parsedData1[el], parsedData2[el]), type: 'nested' }];
+      return [...acc, { name: el, children: compare(parsedData1[el], parsedData2[el]), type: 'nested' }];
     }
     if (parsedData1[el] === parsedData2[el]) {
       return [...acc, { name: el, value: parsedData2[el], type: 'unchanged' }];
@@ -57,7 +57,7 @@ const renderToString = (ast, level = 0) => {
   };
 
   const nodeActionMap = {
-    nested: node => nodeToString('    ', node.name, renderToString(node.value, level + 1)),
+    nested: node => nodeToString('    ', node.name, renderToString(node.children, level + 1)),
     changed: node => `${nodeToString('  + ', node.name, node.newValue)}${nodeToString('  - ', node.name, node.oldValue)}`,
     unchanged: node => nodeToString('    ', node.name, node.value),
     added: node => nodeToString('  + ', node.name, node.value),
