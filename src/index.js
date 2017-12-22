@@ -51,17 +51,17 @@ const objectToString = (object, level) => {
 };
 
 const renderToString = (ast, level = 0) => {
-  const nodeToString = (name, value, prefix) => {
+  const nodeToString = (prefix, name, value) => {
     const renderedValue = _.isObject(value) ? objectToString(value, level + 1) : value;
     return `${addPadding(level)}${prefix}${name}: ${renderedValue}\n`;
   };
 
   const nodeActionMap = {
-    nested: node => nodeToString(node.name, renderToString(node.value, level + 1), '    '),
-    changed: node => `${nodeToString(node.name, node.newValue, '  + ')}${nodeToString(node.name, node.oldValue, '  - ')}`,
-    unchanged: node => nodeToString(node.name, node.value, '    '),
-    added: node => nodeToString(node.name, node.value, '  + '),
-    removed: node => nodeToString(node.name, node.value, '  - '),
+    nested: node => nodeToString('    ', node.name, renderToString(node.value, level + 1)),
+    changed: node => `${nodeToString('  + ', node.name, node.newValue)}${nodeToString('  - ', node.name, node.oldValue)}`,
+    unchanged: node => nodeToString('    ', node.name, node.value),
+    added: node => nodeToString('  + ', node.name, node.value),
+    removed: node => nodeToString('  - ', node.name, node.value),
   };
 
   const reduced = ast.reduce((acc, el) => `${acc}${nodeActionMap[el.type](el)}`, '{\n');
