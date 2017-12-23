@@ -24,7 +24,9 @@ export const compare = (parsedData1, parsedData2) => {
       return [...acc, { name: el, children: compare(parsedData1[el], parsedData2[el]), type: 'nested' }];
     }
     if (parsedData1[el] === parsedData2[el]) {
-      return [...acc, { name: el, oldValue: parsedData2[el], type: 'unchanged' }];
+      return [...acc, {
+        name: el, oldValue: parsedData1[el], newValue: parsedData2[el], type: 'unchanged',
+      }];
     }
     if (!parsedData2[el]) {
       return [...acc, { name: el, oldValue: parsedData1[el], type: 'removed' }];
