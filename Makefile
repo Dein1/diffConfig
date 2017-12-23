@@ -11,13 +11,13 @@ test:
 	npm run test
 
 start:
-	npm run babel-node -- src/bin/gendiff.js --format string /Users/dmitry/project/hexlet-project-2/before-recursive.json /Users/dmitry/project/hexlet-project-2/after-recursive.json
+	npm run babel-node -- src/bin/gendiff.js --format pretty /Users/dmitry/project/hexlet-project-2/__tests__/__fixtures__/before-recursive.json /Users/dmitry/project/hexlet-project-2/__tests__/__fixtures__/after-recursive.json
 
 start1:
-	npm run babel-node -- src/bin/gendiff.js -f plain /Users/dmitry/project/hexlet-project-2/before-recursive.json /Users/dmitry/project/hexlet-project-2/after-recursive.json
+	npm run babel-node -- src/bin/gendiff.js -f json /Users/dmitry/project/hexlet-project-2/__tests__/__fixtures__/before.json /Users/dmitry/project/hexlet-project-2/__tests__/__fixtures__/after.json
 
 start2:
-	npm run babel-node -- src/bin/gendiff.js /Users/dmitry/project/hexlet-project-2/before-recursive.json /Users/dmitry/project/hexlet-project-2/after-recursive.json
+	npm run babel-node -- src/bin/gendiff.js -f plain /Users/dmitry/project/hexlet-project-2/__tests__/__fixtures__/before-recursive.ini /Users/dmitry/project/hexlet-project-2/__tests__/__fixtures__/after-recursive.ini
 
 help:
 	npm run babel-node -- src/bin/gendiff.js -h

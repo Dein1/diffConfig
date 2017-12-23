@@ -24,13 +24,13 @@ export const compare = (parsedData1, parsedData2) => {
       return [...acc, { name: el, children: compare(parsedData1[el], parsedData2[el]), type: 'nested' }];
     }
     if (parsedData1[el] === parsedData2[el]) {
-      return [...acc, { name: el, value: parsedData2[el], type: 'unchanged' }];
+      return [...acc, { name: el, oldValue: parsedData2[el], type: 'unchanged' }];
     }
     if (!parsedData2[el]) {
-      return [...acc, { name: el, value: parsedData1[el], type: 'removed' }];
+      return [...acc, { name: el, oldValue: parsedData1[el], type: 'removed' }];
     }
     if (!parsedData1[el]) {
-      return [...acc, { name: el, value: parsedData2[el], type: 'added' }];
+      return [...acc, { name: el, newValue: parsedData2[el], type: 'added' }];
     }
     return [...acc, {
       name: el, oldValue: parsedData1[el], newValue: parsedData2[el], type: 'changed',
@@ -39,7 +39,7 @@ export const compare = (parsedData1, parsedData2) => {
   return compared;
 };
 
-export default (filePath1, filePath2, format = 'string') => {
+export default (filePath1, filePath2, format = 'pretty') => {
   const file1 = fs.readFileSync(filePath1, 'utf8');
   const file2 = fs.readFileSync(filePath2, 'utf8');
   const parsedData1 = parseData(file1, path.extname(filePath1));

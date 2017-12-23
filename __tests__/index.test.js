@@ -85,3 +85,9 @@ test('recursive json files - plain', () => {
   expect(diff(config1, config2, 'plain')).toMatch(plainResult);
 });
 
+const jsonResult = '[{"name":"host","oldValue":"hexlet.io","type":"unchanged"},{"name":"timeout","oldValue":50,"newValue":20,"type":"changed"},{"name":"proxy","oldValue":"123.234.53.22","type":"removed"},{"name":"verbose","newValue":true,"type":"added"}]';
+test('flat json => json', () => {
+  const config1 = '__tests__/__fixtures__/before.json';
+  const config2 = '__tests__/__fixtures__/after.json';
+  expect(diff(config1, config2, 'json')).toMatch(jsonResult);
+});
