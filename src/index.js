@@ -1,21 +1,8 @@
 import _ from 'lodash';
 import fs from 'fs';
 import path from 'path';
-import yaml from 'js-yaml';
-import ini from 'ini';
 import render from './renderers/';
-
-
-const parseMethods = {
-  '.json': JSON.parse,
-  '.yml': yaml.safeLoad,
-  '.ini': ini.parse,
-};
-
-const parseData = (file, extension) => {
-  const parse = parseMethods[extension];
-  return parse(file);
-};
+import parse from './parsers';
 
 const compareActionMap = [
   {
@@ -64,8 +51,8 @@ export const compare = (parsedData1, parsedData2) => {
 export default (filePath1, filePath2, format = 'pretty') => {
   const file1 = fs.readFileSync(filePath1, 'utf8');
   const file2 = fs.readFileSync(filePath2, 'utf8');
-  const parsedData1 = parseData(file1, path.extname(filePath1));
-  const parsedData2 = parseData(file2, path.extname(filePath2));
+  const parsedData1 = parse(file1, path.extname(filePath1));
+  const parsedData2 = parse(file2, path.extname(filePath2));
   const compared = compare(parsedData1, parsedData2);
   return render(compared, format);
 };
